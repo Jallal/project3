@@ -64,12 +64,12 @@ td {
     text-decoration: none;
 }
 
-.guess-right:link, .guess-right:visited  {
+.guess-right {
     color: green;
     text-decoration: none;
 }
 
-.guess-wrong:link, .guess-wrong:visited  {
+.guess-wrong {
     color: red;
     text-decoration: none;
 }
