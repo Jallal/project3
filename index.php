@@ -5,9 +5,8 @@
  * Date: 2/12/15
  * Time: 5:03 PM
  */
-require 'format.inc.php';
-require 'lib/game.inc.php';
-$view = new SudokuView($sudoku);
+session_start();
+unset($_SESSION['username']);
 ?>
 
 <!DOCTYPE html>
@@ -25,7 +24,7 @@ $view = new SudokuView($sudoku);
 <div class="guess-box">
 
 <br>Enter the player name to start a new game:<br>
-<form   name=username" action="game-post.php?username" method="post">
+<form id="username" action="game-post.php" method="post">
     <input type="text" name="name" placeholder="John" value="">
     <br>
     <input type="submit"  name ="username" value="Start">

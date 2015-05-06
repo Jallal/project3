@@ -5,9 +5,7 @@
  * Date: 2/12/15
  * Time: 5:04 PM
  */
-require 'format.inc.php';
-require 'lib/game.inc.php';
-$view = new SudokuView($sudoku);
+session_start();
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +20,10 @@ $view = new SudokuView($sudoku);
 </head>
 
 <body>
-<?php echo present_header("Sudoku Game "); ?>
+<header>
+    <nav><p><a href="#" id="give-up">Give up</a></p></nav>
+    <h1><?php echo $_SESSION['name']; ?>'s Sudoku Game</h1>
+</header>
 
 
 <div class="cells">
@@ -101,8 +102,6 @@ HTML;
 
 <script>
 
-    var gameNotes
-
 $(document).ready(function() {
 
     var clicked_x;
@@ -148,7 +147,7 @@ $(document).ready(function() {
         [0, 0, 0,   0, 0, 8,    0, 0, 0]
     ];
 
-    gameNotes = [
+    var gameNotes = [
         [[], [], [],   [], [], [],    [], [], []],
         [[], [], [],   [], [], [],    [], [], []],
         [[], [], [],   [], [], [],    [], [], []],
@@ -159,7 +158,7 @@ $(document).ready(function() {
 
         [[], [], [],   [], [], [],    [], [], []],
         [[], [], [],   [], [], [],    [], [], []],
-        [[], [], [],   [], [], [],    [], [], []],
+        [[], [], [],   [], [], [],    [], [], []]
     ];
 
     // render view
@@ -169,9 +168,16 @@ $(document).ready(function() {
                 // if cell has value
                 if (gamePlaying[y][x] != 0) {
                     $("#cell-" + y + "-" + x).text(gamePlaying[y][x]);
+                } else if(gameNotes[y][x].length != 0) {
+                    var text = "";
+                    for(var i = 0; i < gameNotes[y][x].length; i++) {
+                        text += gameNotes[y][x][i];
+                        if (i != gameNotes[y][x].length -1) {
+                            text += ", ";
+                        }
+                    }
+                    $("#cell-" + y + "-" + x).text(text);
                 }
-
-                // if cell has notes
 
             }
         }
@@ -183,63 +189,98 @@ $(document).ready(function() {
 
     update();
 
-    $(".cell").click(function (event) {
-        // get cell x,y
-        a = event.target.id.split("-");
-        y = parseInt(a[1]);
-        x = parseInt(a[2]);
+    $(document).ready ( function () {
+        $(document).on("click", ".cell", function (event) {
+            // get cell x,y
+            a = event.target.id.split("-");
+            y = parseInt(a[1]);
+            x = parseInt(a[2]);
 
-        // if editable
-        if (gameStart[y][x] == 0) {
-            $( "#dialog").dialog( "open" );
-            $("#guess").val( "" )
-            $("#note").val( "" )
-            clicked_x = x;
-            clicked_y = y;
-        }
-    });
-
-    $( "#guessform" ).submit(function(event){
-        event.preventDefault();
-        $( "#dialog").dialog( "close" );
-
-        guess = parseInt($("#guess").val());
-
-        gamePlaying[y][x] = guess;
-        // color correctly
-        if (gamePlaying[y][x] == gameSolution[y][x]) {
-            $("#cell-" + y + "-" + x).addClass("guess-right");
-            $("#cell-" + y + "-" + x).removeClass("guess-wrong");
-        } else {
-            $("#cell-" + y + "-" + x).addClass("guess-wrong");
-            $("#cell-" + y + "-" + x).removeClass("guess-right");
-        }
-        // render game
-        update();
-
-        return false;
-    });
-
-    $( "#notesform" ).submit(function(event){
-        event.preventDefault();
-        $( "#dialog").dialog( "close" );
-
-        note = parseInt($("#note").val());
-
-        gameNotes[y][x].push(note);
-
-        update();
-        return false;
-    });
-
-    $("#give-up").click(function (event) {
-        for (y = 0; y < 9; y++) {
-            for (x = 0; x < 9; x++) {
-                $("#cell-" + y + "-" + x).text(gameSolution[y][x]);
+            // if editable
+            if (gameStart[y][x] == 0) {
+                $( "#dialog").dialog( "open" );
+                $("#guess").val( "" );
+                $("#note").val( "" );
+                clicked_x = x;
+                clicked_y = y;
             }
-        }
+        });
+        $(document).on("click", ".notes", function (event) {
+            // get cell x,y
+            var findIt = $(event.target);
+            a = findIt.attr('id').split("-");
+            y = parseInt(a[1]);
+            console.log(y);
+            x = parseInt(a[2]);
+            console.log(x);
+
+            // if editable
+            if (gameStart[y][x] == 0) {
+                $( "#dialog").dialog( "open" );
+                $("#guess").val( "" );
+                $("#note").val( "" );
+                clicked_x = x;
+                clicked_y = y;
+            }
+        });
+        $( "#guessform" ).submit(function(event){
+            event.preventDefault();
+            $( "#dialog").dialog( "close" );
+
+            guess = parseInt($("#guess").val());
+
+            gamePlaying[y][x] = guess;
+            // color correctly
+            if (!$("#cell-" + y + "-" + x).hasClass('cell')) {
+                $("#cell-" + y + "-" + x).addClass('cell');
+            }
+            if (guess != 0) {
+                if (gamePlaying[y][x] == gameSolution[y][x]) {
+                    $("#cell-" + y + "-" + x).addClass("guess-right");
+                    $("#cell-" + y + "-" + x).removeClass("guess-wrong");
+                } else {
+                    $("#cell-" + y + "-" + x).addClass("guess-wrong");
+                    $("#cell-" + y + "-" + x).removeClass("guess-right");
+                }
+            } else {
+                $("#cell-" + y + "-" + x).removeClass();
+            }
+
+
+            // render game
+            update();
+
+            return false;
+        });
+        $( "#notesform" ).submit(function(event){
+            event.preventDefault();
+            $( "#dialog").dialog( "close" );
+
+            note = parseInt($("#note").val());
+
+            gameNotes[y][x].push(note);
+
+            if (gamePlaying[y][x] == 0) {
+                $("#cell-" + y + "-" + x).removeClass("cell");
+                $("#cell-" + y + "-" + x).addClass("notes");
+            }
+
+            update();
+            return false;
+        });
+        $("#give-up").click(function (event) {
+            for (y = 0; y < 9; y++) {
+                for (x = 0; x < 9; x++) {
+                    $("#cell-" + y + "-" + x).text(gameSolution[y][x]);
+                }
+            }
+        });
+        $( "#dialog" ).dialog({autoOpen: false});
     });
-    $( "#dialog" ).dialog({autoOpen: false});
+
+    /*$(".cell").click(function (event) {
+
+    });*/
 });
 </script>
 </html>

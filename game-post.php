@@ -5,25 +5,15 @@
  * Date: 2/20/15
  * Time: 9:01 PM
  */
-
-require 'lib/game.inc.php';
-
-$controller = new SudokuController($sudoku, $_REQUEST);
-
-if($controller->isReset()) {
-    unset($_SESSION[SUDOKU_SESSION]);
-    if ($controller->setUsername()) {
-        $_SESSION['username'] = $_REQUEST['name'];
-    }
+session_start();
+$tmpName = trim($_POST['name']);
+if($_POST['name'] === null || empty($tmpName)) {
+    header('Location: index.php');
+    exit;
 }
+$_SESSION['name'] = $_POST['name'];
 
-elseif($controller->ischeatMode()){
-    unset($_SESSION[SUDOKU_SESSION]);
-    $_SESSION[SUDOKU_SESSION] = new SudokuModel(11);
-}
+header('Location: game.php');
 
-//echo"<p>" .$controller->getPage()."</p>";
-header('Location: ' . $controller->getPage());
 
-//phpinfo();
 ?>
