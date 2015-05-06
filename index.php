@@ -29,8 +29,6 @@ unset($_SESSION['username']);
     <br>
     <input type="submit"  name ="username" value="Start">
 </form>
-
-    <a href="game-post.php?c">Cheat Mode</a>
 </div>
 
 </body>

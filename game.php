@@ -21,7 +21,7 @@ session_start();
 
 <body>
 <header>
-    <nav><p><a href="#" id="give-up">Give up</a></p></nav>
+    <nav><p><a href="#" id="give-up">Give up</a>&nbsp;<a href="#" id="cheat">Cheat Mode</a></p></nav>
     <h1><?php echo $_SESSION['name']; ?>'s Sudoku Game</h1>
 </header>
 
@@ -107,6 +107,42 @@ $(document).ready(function() {
     var clicked_x;
     var clicked_y;
 
+    var cheatGame = [
+        [0, 0, 0, 0, 5, 0, 0, 1, 9],
+        [0, 0, 0, 0, 2, 0, 6, 3, 5],
+        [0, 0, 9, 1, 0, 0, 7, 0, 0],
+        [0, 0, 8, 0, 4, 0, 9, 0, 1],
+        [6, 0, 0, 0, 0, 0, 0, 0, 7],
+        [1, 0, 5, 0, 9, 0, 8, 0, 0],
+        [0, 0, 6, 0, 0, 5, 1, 0, 0],
+        [4, 5, 2, 0, 1, 0, 0, 0, 0],
+        [3, 7, 0, 0, 8, 0, 0, 0, 0]
+    ];
+
+    var cheatStart = [
+        [0, 0, 0, 0, 5, 0, 0, 1, 9],
+        [0, 0, 0, 0, 2, 0, 6, 3, 5],
+        [0, 0, 9, 1, 0, 0, 7, 0, 0],
+        [0, 0, 8, 0, 4, 0, 9, 0, 1],
+        [6, 0, 0, 0, 0, 0, 0, 0, 7],
+        [1, 0, 5, 0, 9, 0, 8, 0, 0],
+        [0, 0, 6, 0, 0, 5, 1, 0, 0],
+        [4, 5, 2, 0, 1, 0, 0, 0, 0],
+        [3, 7, 0, 0, 8, 0, 0, 0, 0]
+    ];
+
+    var cheatSolution = [
+        [2, 6, 3, 7, 5, 8, 4, 1, 9],
+        [8, 1, 7, 4, 2, 9, 6, 3, 5],
+        [5, 4, 9, 1, 6, 3, 7, 8, 2],
+        [7, 3, 8, 5, 4, 2, 9, 6, 1],
+        [6, 9, 4, 8, 3, 1, 2, 5, 7],
+        [1, 2, 5, 6, 9, 7, 8, 4, 3],
+        [9, 8, 6, 3, 7, 5, 1, 2, 4],
+        [4, 5, 2, 9, 1, 6, 3, 7, 8],
+        [3, 7, 1, 2, 8, 4, 5, 9, 6]
+    ];
+
     var gameSolution = [
         [8, 5, 3, 9, 1, 6, 4, 2, 7],
         [7, 9, 1, 2, 4, 3, 5, 6, 8],
@@ -184,6 +220,14 @@ $(document).ready(function() {
 
         if (gamePlaying == gameSolution){
             alert("YOU WIN!");
+        }
+    };
+
+    function clearBoard(){
+        for (y = 0; y < 9; y++) {
+            for (x = 0; x < 9; x++) {
+                $("#cell-" + y + "-" + x).html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+            }
         }
     };
 
@@ -274,6 +318,26 @@ $(document).ready(function() {
                     $("#cell-" + y + "-" + x).text(gameSolution[y][x]);
                 }
             }
+        });
+        $("#cheat").click(function (event) {
+            gameStart = cheatStart;
+            gamePlaying = cheatGame;
+            gameSolution = cheatSolution;
+            gameNotes = [
+                [[], [], [],   [], [], [],    [], [], []],
+                [[], [], [],   [], [], [],    [], [], []],
+                [[], [], [],   [], [], [],    [], [], []],
+
+                [[], [], [],   [], [], [],    [], [], []],
+                [[], [], [],   [], [], [],    [], [], []],
+                [[], [], [],   [], [], [],    [], [], []],
+
+                [[], [], [],   [], [], [],    [], [], []],
+                [[], [], [],   [], [], [],    [], [], []],
+                [[], [], [],   [], [], [],    [], [], []]
+            ];
+            clearBoard();
+            update();
         });
         $( "#dialog" ).dialog({autoOpen: false});
     });
